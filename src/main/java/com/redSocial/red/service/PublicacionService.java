@@ -8,8 +8,8 @@ public interface PublicacionService {
     List<PublicacionResponse> obtenerTodos();
     List<PublicacionResponse> obtenerTodasPorUsuario(Long id);
     PublicacionResponse obtenerPorId(Long id);
-    PublicacionResponse guardar(PublicacionRequest producto);
+    PublicacionResponse guardar(PublicacionRequest dto, String imagenUrl);
     void eliminar(Long id);
-    PublicacionResponse editar(Long id, PublicacionRequest dto);
+    PublicacionResponse editar(Long id, PublicacionRequest dto, String imagenUrl);
 
 }

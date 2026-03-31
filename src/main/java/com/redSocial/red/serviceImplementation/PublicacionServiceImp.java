@@ -44,13 +44,19 @@ public class PublicacionServiceImp implements PublicacionService{
     }
 
     @Override
-    public PublicacionResponse guardar(PublicacionRequest dto) {
+    public PublicacionResponse guardar(PublicacionRequest dto, String imagenUrl) {
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
         Publicacion publicacion = new Publicacion();
         publicacion.setUsuario(usuario);
         publicacion.setTitulo(dto.getTitulo());
         publicacion.setDescripcion(dto.getDescripcion());
+
+        if (imagenUrl != null && !imagenUrl.isEmpty()) {
+            publicacion.setImagenUrl(imagenUrl); // guardamos solo la ruta/nombre
+        }
+
         Publicacion guardado = publicacionRepository.save(publicacion);
         return toResponseDto(guardado);
     }
@@ -78,11 +84,19 @@ public class PublicacionServiceImp implements PublicacionService{
     }
 
     @Override
-    public PublicacionResponse editar(Long id, PublicacionRequest dto) {
+    public PublicacionResponse editar(Long id, PublicacionRequest dto, String imagenUrl) {
         Publicacion publicacion = publicacionRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Publicacion no encontrada"));
-        publicacion.setDescripcion(dto.getDescripcion());
+            .orElseThrow(() -> new RuntimeException("Publicacion no encontrada"));
+
+        // Actualizar título y descripción
         publicacion.setTitulo(dto.getTitulo());
+        publicacion.setDescripcion(dto.getDescripcion());
+
+        // Actualizar imagen solo si se pasó una nueva
+        if (imagenUrl != null && !imagenUrl.isEmpty()) {
+            publicacion.setImagenUrl(imagenUrl);
+        }
+
         Publicacion guardado = publicacionRepository.save(publicacion);
         return toResponseDto(guardado);
     }

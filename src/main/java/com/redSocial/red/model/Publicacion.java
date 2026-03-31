@@ -22,6 +22,7 @@ public class Publicacion {
     private String titulo;
     private String descripcion;
     private LocalDateTime fechaCreacion;
+    private String imagenUrl;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -37,7 +38,7 @@ public class Publicacion {
     }
 
     public Publicacion(Long id, String descripcion, LocalDateTime fechaCreacion, Usuario usuario,
-            List<Interaccion> interacciones, List<Comentario> comentarios, String titulo) {
+            List<Interaccion> interacciones, List<Comentario> comentarios, String titulo, String imagen) {
         this.id = id;
         this.descripcion = descripcion;
         this.fechaCreacion = fechaCreacion;
@@ -45,6 +46,7 @@ public class Publicacion {
         this.interacciones = interacciones;
         this.comentarios = comentarios;
         this.titulo = titulo;
+        this.imagenUrl = imagen;
     }
 
     public Long getId() {
@@ -107,6 +109,14 @@ public class Publicacion {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
     }
 
 }
