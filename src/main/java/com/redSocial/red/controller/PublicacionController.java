@@ -24,6 +24,7 @@ public class PublicacionController {
     private PublicacionService service;
 
     @GetMapping("/todos")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public List<PublicacionResponse> obtenerTodos() {
         return service.obtenerTodos();
     }

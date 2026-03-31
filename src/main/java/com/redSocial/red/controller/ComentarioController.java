@@ -42,6 +42,7 @@ public class ComentarioController {
     }
 
     @GetMapping("/buscar/{id}")
+        @PreAuthorize("hasAnyRole('ADMIN')")
     public ComentarioResponse buscarPorId(@PathVariable Long id) {
         return service.obtenerPorId(id);
     }
@@ -53,11 +54,13 @@ public class ComentarioController {
     }
 
     @DeleteMapping("/borrar/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
     public void eliminar(@PathVariable Long id) {
         service.eliminar(id);
     }
 
     @PutMapping("/editar/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
     public ComentarioResponse editar(
             @PathVariable Long id,
             @RequestBody ComentarioRequest dto) {
