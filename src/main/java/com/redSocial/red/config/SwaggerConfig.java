@@ -1,4 +1,4 @@
-package com.redSocial.red.security.config;
+package com.redSocial.red.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Components;
