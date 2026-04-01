@@ -14,9 +14,11 @@ import com.redSocial.red.model.Usuario;
 import com.redSocial.red.service.PublicacionService;
 
 @Service
-public class PublicacionServiceImp implements PublicacionService{
+public class PublicacionServiceImp implements PublicacionService {
+
     @Autowired
     private UsuarioRepository usuarioRepository;
+
     @Autowired
     private PublicacionRepository publicacionRepository;
 
@@ -27,13 +29,15 @@ public class PublicacionServiceImp implements PublicacionService{
                 .map(this::toResponseDto)
                 .toList();
     }
+
     @Override
-    public List<PublicacionResponse> obtenerTodasPorUsuario(Long id){
+    public List<PublicacionResponse> obtenerTodasPorUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return publicacionRepository.findByUsuario(usuario)
-            .stream().map(this::toResponseDto)
-            .toList();
+                .stream()
+                .map(this::toResponseDto)
+                .toList();
     }
 
     @Override
@@ -44,18 +48,27 @@ public class PublicacionServiceImp implements PublicacionService{
     }
 
     @Override
-    public PublicacionResponse guardar(PublicacionRequest dto, String imagenUrl) {
+    public PublicacionResponse guardar(PublicacionRequest dto) {
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
+
         Publicacion publicacion = new Publicacion();
         publicacion.setUsuario(usuario);
         publicacion.setTitulo(dto.getTitulo());
         publicacion.setDescripcion(dto.getDescripcion());
 
-        if (imagenUrl != null && !imagenUrl.isEmpty()) {
-            publicacion.setImagenUrl(imagenUrl); // guardamos solo la ruta/nombre
-        }
+        Publicacion guardado = publicacionRepository.save(publicacion);
+        return toResponseDto(guardado);
+    }
+
+    @Override
+    public PublicacionResponse editar(Long id, PublicacionRequest dto) {
+        Publicacion publicacion = publicacionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Publicacion no encontrada"));
+
+        // Actualizar título y descripción
+        publicacion.setTitulo(dto.getTitulo());
+        publicacion.setDescripcion(dto.getDescripcion());
 
         Publicacion guardado = publicacionRepository.save(publicacion);
         return toResponseDto(guardado);
@@ -72,32 +85,12 @@ public class PublicacionServiceImp implements PublicacionService{
     private PublicacionResponse toResponseDto(Publicacion publicacion) {
         PublicacionResponse dto = new PublicacionResponse();
         dto.setId(publicacion.getId());
-        String usuario = publicacion.getUsuario().getNombreUsuario();
-        dto.setNombreUsuario(usuario);
-        String titulo = publicacion.getTitulo();
-        dto.setTitulo(titulo);
+        dto.setNombreUsuario(publicacion.getUsuario().getNombreUsuario());
+        dto.setTitulo(publicacion.getTitulo());
         dto.setDescripcion(publicacion.getDescripcion());
         dto.setFechaCreacion(publicacion.getFechaCreacion());
         dto.setCantidadLikes(publicacionRepository.contarLikes(publicacion.getId()));
         dto.setCantidadComentarios(publicacionRepository.contarComentarios(publicacion.getId()));
         return dto;
-    }
-
-    @Override
-    public PublicacionResponse editar(Long id, PublicacionRequest dto, String imagenUrl) {
-        Publicacion publicacion = publicacionRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Publicacion no encontrada"));
-
-        // Actualizar título y descripción
-        publicacion.setTitulo(dto.getTitulo());
-        publicacion.setDescripcion(dto.getDescripcion());
-
-        // Actualizar imagen solo si se pasó una nueva
-        if (imagenUrl != null && !imagenUrl.isEmpty()) {
-            publicacion.setImagenUrl(imagenUrl);
-        }
-
-        Publicacion guardado = publicacionRepository.save(publicacion);
-        return toResponseDto(guardado);
     }
 }

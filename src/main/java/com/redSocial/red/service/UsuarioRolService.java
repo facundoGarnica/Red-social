@@ -11,4 +11,5 @@ public interface UsuarioRolService {
     UsuarioRolResponse guardar(UsuarioRolRequest producto);
     void eliminar(Long id);
     UsuarioRolResponse editar(Long id, UsuarioRolRequest dto);
+    List<UsuarioRolResponse> obtenerRolesPorUsuario(Long usuarioId);
 }

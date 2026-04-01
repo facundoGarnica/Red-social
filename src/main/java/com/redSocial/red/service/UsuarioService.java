@@ -11,4 +11,6 @@ public interface UsuarioService {
     UsuarioResponse guardar(UsuarioRequest producto);
     void eliminar(Long id);
     UsuarioResponse editar(Long id, UsuarioRequest dto);
+    UsuarioResponse obtenerPorEmail(String correo);
+    UsuarioResponse obtenerUsuarioLogueado(String username);
 }

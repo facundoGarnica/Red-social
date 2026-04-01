@@ -42,9 +42,26 @@ public class AuthController {
 
     // REGISTRAR
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody UsuarioRequest request) {
-        UsuarioResponse usuario = usuarioService.guardar(request);
-        String token = jwtUtil.generarToken(usuario.getNombreUsuario());
-        return ResponseEntity.ok(new AuthResponse(token));
+    public ResponseEntity<?> register(@RequestBody UsuarioRequest request) {
+        try {
+            UsuarioResponse usuario = usuarioService.guardar(request);
+            String token = jwtUtil.generarToken(usuario.getNombreUsuario());
+            return ResponseEntity.ok(new AuthResponse(token));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponse> me(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String token = authHeader.substring(7); // quita "Bearer "
+        String username = jwtUtil.extraerUsername(token); // extrae username del token
+
+        UsuarioResponse response = usuarioService.obtenerUsuarioLogueado(username);
+
+        return ResponseEntity.ok(response);
     }
 }

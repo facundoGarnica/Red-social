@@ -42,7 +42,25 @@ public class UsuarioServiceImp implements UsuarioService {
     }
 
     @Override
+    public UsuarioResponse obtenerPorEmail(String correo) {
+        Usuario usuario = usuarioRepository.findByEmail(correo)
+                .orElseThrow(() -> new RuntimeException("Usuario con correo no encontrado"));
+        return toResponseDto(usuario);
+    }
+
+    @Override
+    public UsuarioResponse obtenerUsuarioLogueado(String username) {
+        Usuario usuario = usuarioRepository.findByNombreUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return toResponseDto(usuario);
+    }
+
+    @Override
     public UsuarioResponse guardar(UsuarioRequest dto) {
+        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new RuntimeException("El usuario con este correo ya existe");
+        }
         Usuario usuario = new Usuario();
         usuario.setNombreUsuario(dto.getNombreUsuario());
         usuario.setEmail(dto.getEmail());
@@ -77,6 +95,14 @@ public class UsuarioServiceImp implements UsuarioService {
         dto.setFechaCreacion(usuario.getFechaCreacion());
         dto.setEmail(usuario.getEmail());
         dto.setCantidadPublicaciones(usuarioRepository.contarPublicaciones(usuario.getId()));
+
+        // Obtener roles del usuario y mapear solo los nombres
+        List<String> roles = usuarioRolService.obtenerRolesPorUsuario(usuario.getId())
+                .stream()
+                .map(ur -> ur.getNombreRol())
+                .toList();
+        dto.setRoles(roles);
+
         return dto;
     }
 

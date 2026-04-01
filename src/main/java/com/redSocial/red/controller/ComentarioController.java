@@ -33,7 +33,6 @@ public class ComentarioController {
     }
 
     @GetMapping("/publicacion/{publicacionId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USUARIO')")
     public Page<ComentarioResponse> obtenerPorPublicacion(
             @PathVariable Long publicacionId,
             @RequestParam(defaultValue = "0") int page,

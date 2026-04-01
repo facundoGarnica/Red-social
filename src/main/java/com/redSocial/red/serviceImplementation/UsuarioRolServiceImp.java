@@ -38,6 +38,20 @@ public class UsuarioRolServiceImp implements UsuarioRolService {
                 .orElseThrow(() -> new RuntimeException("UsuarioRol no encontrado"));
         return toResponseDto(usuarioRol);
     }
+    @Override
+    public List<UsuarioRolResponse> obtenerRolesPorUsuario(Long usuarioId) {
+        // Buscar el usuario primero
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Traer todos los UsuarioRol asociados
+        List<UsuarioRol> rolesUsuario = usuarioRolRepository.findByUsuario(usuario);
+
+        // Mapear a DTO
+        return rolesUsuario.stream()
+                .map(this::toResponseDto)
+                .toList();
+    }
 
     @Override
     public UsuarioRolResponse guardar(UsuarioRolRequest dto) {
